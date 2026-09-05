@@ -259,7 +259,7 @@ useEffect(() => {
           </div>
         </div>
       </section>
-<section className="bg-slate-50">
+<section id="analyse" className="scroll-mt-28 bg-slate-50">
   <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
     <div className="mx-auto max-w-3xl text-center">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-600">
@@ -277,7 +277,6 @@ useEffect(() => {
     </div>
 
     <div
-  id="analyse"
   className="mx-auto mt-12 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow..."
 >
       <label className="text-sm font-semibold text-slate-900">
