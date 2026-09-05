@@ -576,7 +576,7 @@ Vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und melden uns 
             </div>
 
             <a
-              href="mailto:kontakt@easyne.de"
+              href="mailto:ermal.easyne@outlook.com"
               className="rounded-xl bg-white px-7 py-4 text-center font-semibold text-slate-950 transition hover:scale-[1.02]"
             >
               Kostenlose Analyse sichern →
