@@ -93,7 +93,7 @@ useEffect(() => {
           </nav>
 
           <a
-            href="#kontakt"
+            href="#analyse"
             className="rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-3 py-2 md:px-5 md:py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:scale-[1.02]"
           >
             Kostenlose Analyse
@@ -276,7 +276,10 @@ useEffect(() => {
       </p>
     </div>
 
-    <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 md:p-8">
+    <div
+  id="analyse"
+  className="mx-auto mt-12 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow..."
+>
       <label className="text-sm font-semibold text-slate-900">
         Beispiel-Kundenanfrage
       </label>
