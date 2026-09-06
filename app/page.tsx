@@ -588,11 +588,18 @@ Vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und melden uns 
       </section>
 
       <footer className="border-t border-slate-200">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <span>© 2026 EASyne</span>
-          <span>Automatisierung für moderne Unternehmen.</span>
-        </div>
-      </footer>
+  <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500">
+    <span>© 2026 EASyne</span>
+    <span>Automatisierung für moderne Unternehmen.</span>
+
+    <a
+      href="/datenschutz"
+      className="w-fit transition hover:text-slate-900"
+    >
+      Datenschutz
+    </a>
+  </div>
+</footer>
     </main>
   );
 }
