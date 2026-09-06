@@ -68,15 +68,20 @@ useEffect(() => {
     <main className="min-h-screen bg-white text-slate-950">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#070b1c]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-          <a href="#" className="group flex items-center gap-3">
-  <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-purple-600 shadow-lg shadow-indigo-500/20">
-    <span className="relative z-10 text-lg font-black text-white">E</span>
-    <div className="absolute inset-0 translate-y-full bg-white/15 transition duration-300 group-hover:translate-y-0" />
-  </div>
+          <a href="#" className="flex items-center gap-3">
+  <img
+    src="/easyne-icon.png"
+    alt=""
+    className="h-12 w-12 object-contain"
+  />
 
   <div className="flex items-baseline">
-    <span className="text-2xl font-bold tracking-tight text-white">EASy</span>
-    <span className="text-2xl font-light tracking-tight text-indigo-400">ne</span>
+    <span className="text-2xl font-bold tracking-tight text-white">
+      EAS
+    </span>
+    <span className="text-2xl font-bold tracking-tight text-violet-400">
+      yne
+    </span>
   </div>
 </a>
 
