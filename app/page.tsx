@@ -265,7 +265,7 @@ useEffect(() => {
         </div>
       </section>
 <section id="analyse" className="scroll-mt-28 bg-slate-50">
-  <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+  <div className="mx-auto max-w-7xl px-6 py-4 lg:px-8">
     <div className="mx-auto max-w-3xl text-center">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-600">
         Live Demo
@@ -282,7 +282,7 @@ useEffect(() => {
     </div>
 
     <div
-  className="mx-auto mt-12 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow..."
+  className="mx-auto mt-8 max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow..."
 >
       <label className="text-sm font-semibold text-slate-900">
         Beispiel-Kundenanfrage
@@ -293,7 +293,7 @@ useEffect(() => {
       maxLength={3000}
       value={message}
 onChange={(e) => setMessage(e.target.value)}
-        className="mt-3 min-h-44 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+        className="mt-3 min-h-24 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
         placeholder="Hallo, ich interessiere mich für Ihre Dienstleistung und hätte gerne nächste Woche einen Termin..."
       />
 <p className="mt-2 text-right text-sm text-slate-500">
