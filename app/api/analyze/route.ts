@@ -33,7 +33,7 @@ if (!current || now > current.resetTime) {
 }
     const body = await request.json();
 const message = String(body.message ?? "").trim();
-
+const language = String(body.language ?? "Deutsch");
 if (!message) {
   return Response.json(
     {
@@ -58,7 +58,7 @@ if (message.length > 3000) {
 
       input: `
 Analysiere diese Kundenanfrage für EASyne.
-
+Erstelle die gesamte Analyse und die vorgeschlagene Antwort auf ${language}.
 Verwende ausschließlich Informationen aus der Kundenanfrage.
 Erfinde keine Namen, E-Mail-Adressen, Termine oder anderen Kundendaten.
 Wenn Name oder E-Mail nicht vorhanden sind, verwende "Nicht erkannt".

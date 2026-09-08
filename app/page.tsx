@@ -8,6 +8,7 @@ const [result, setResult] = useState<string | null>(null);
 const [loading, setLoading] = useState(false);
 const [copied, setCopied] = useState(false);
 const [error, setError] = useState("");
+const [language, setLanguage] = useState("Deutsch");
 const resultRef = useRef<HTMLDivElement | null>(null);
 const messageRef = useRef<HTMLTextAreaElement>(null);
 useEffect(() => {
@@ -287,7 +288,17 @@ useEffect(() => {
       <label className="text-sm font-semibold text-slate-900">
         Beispiel-Kundenanfrage
       </label>
-
+<select
+  value={language}
+  onChange={(e) => setLanguage(e.target.value)}
+  className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700"
+>
+  <option value="Deutsch">Deutsch</option>
+  <option value="Englisch">Englisch</option>
+  <option value="Französisch">Französisch</option>
+  <option value="Italienisch">Italienisch</option>
+  <option value="Spanisch">Spanisch</option>
+</select>
       <textarea
       ref={messageRef}
       maxLength={3000}
@@ -314,7 +325,7 @@ onChange={(e) => setMessage(e.target.value)}
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({ message }),
+  body: JSON.stringify({ message, language }),
 });
 
 const data = await response.json();
