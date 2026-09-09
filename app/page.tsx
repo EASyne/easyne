@@ -99,6 +99,12 @@ useEffect(() => {
           </nav>
 
           <a
+  href="/login"
+  className="hidden sm:inline-flex rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+>
+  Firmenlogin
+</a>
+          <a
             href="#analyse"
             className="rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-3 py-2 md:px-5 md:py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:scale-[1.02]"
           >
