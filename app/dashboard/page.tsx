@@ -10,10 +10,18 @@ export default async function DashboardPage() {
 const { data: requests, error } = await supabase
   .from("customer_requests")
   .select("*")
+  .order("status", { ascending: false })
   .order("created_at", { ascending: false });
   if (error) {
   console.error("Fehler beim Laden der Kundenanfragen:", error);
 }
+const openRequests = requests?.filter(
+  (request) => request.status !== "erledigt"
+);
+
+const doneRequests = requests?.filter(
+  (request) => request.status === "erledigt"
+);
   if (!user) {
     redirect("/login");
   }
@@ -43,11 +51,17 @@ const { data: requests, error } = await supabase
     </div>
 
     <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
-      {requests?.length ?? 0} offen
+     {openRequests?.length ?? 0} offen
     </span>
   </div>
-  {requests?.map((request) => (
+  {openRequests?.length === 0 && (
+  <p className="mt-6 text-sm text-slate-500">
+    Keine offenen Anfragen 🎉
+  </p>
+)}
+  {openRequests?.map((request) => (
   <a
+  
     key={request.id}
     href={`/dashboard/anfrage/${request.id}`}
     className="mt-6 block rounded-xl border border-slate-200 p-4 transition hover:border-violet-300 hover:shadow-sm"
@@ -56,9 +70,15 @@ const { data: requests, error } = await supabase
       {request.subject}
     </p>
 
-    <span className="inline-flex rounded-full bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-700">
-      Neu
-    </span>
+    <span
+  className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+    request.status === "erledigt"
+      ? "bg-emerald-100 text-emerald-700"
+      : "bg-violet-100 text-violet-700"
+  }`}
+>
+  {request.status === "erledigt" ? "Erledigt" : "Neu"}
+</span>
 
     <p className="mt-1 text-xs font-medium text-slate-400">
       {request.costumer_mail}
@@ -68,6 +88,30 @@ const { data: requests, error } = await supabase
       {request.message}
     </p>
   </a>
+))}
+<h2 className="mt-10 text-lg font-bold text-slate-900">
+  Erledigt
+</h2>
+{doneRequests?.map((request) => (
+  <a
+  key={request.id}
+  href={`/dashboard/anfrage/${request.id}`}
+  className="mt-3 block rounded-xl border border-slate-200 p-4 transition hover:border-violet-300 hover:shadow-sm"
+>
+  <p className="font-semibold text-slate-900">
+    {request.subject}
+  </p>
+<span className="mt-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
+  Erledigt ✓
+</span>
+  <p className="mt-1 text-xs font-medium text-slate-400">
+    {request.costumer_mail}
+  </p>
+
+  <p className="mt-1 text-sm text-slate-500">
+    {request.message}
+  </p>
+</a>
 ))}
 </div>
 </div> 
