@@ -101,6 +101,7 @@ const analysis = data.analysis;
   <ResponseEditor
   initialReply={analysis?.reply ?? ""}
   requestId={Number(id)}
+  initialStatus={request.status ?? "neu"}
 />
 </div>
       </div>
