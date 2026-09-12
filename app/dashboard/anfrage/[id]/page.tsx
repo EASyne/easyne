@@ -102,6 +102,7 @@ const analysis = data.analysis;
   initialReply={analysis?.reply ?? ""}
   requestId={Number(id)}
   initialStatus={request.status ?? "neu"}
+  initialSent={Boolean(request.reply_sent_at)}
 />
 </div>
       </div>

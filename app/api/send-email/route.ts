@@ -65,13 +65,22 @@ export async function POST(request: Request) {
       );
     }
 
-    return Response.json({
-      success: true,
-      data,
-    });
+    
+    const { error: updateError } = await supabase
+  .from("customer_requests")
+  .update({ reply_sent_at: new Date().toISOString() })
+  .eq("id", requestId);
+
+if (updateError) {
+  console.error("Versandstatus konnte nicht gespeichert werden:", updateError);
+}
+return Response.json({
+  success: true,
+  data,
+});
   } catch (error) {
     console.error("Send email Fehler:", error);
-
+    
     return Response.json(
       { success: false, error: "E-Mail konnte nicht gesendet werden." },
       { status: 500 }

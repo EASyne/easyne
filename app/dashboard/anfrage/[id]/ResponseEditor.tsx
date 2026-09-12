@@ -6,16 +6,18 @@ export default function ResponseEditor({
   initialReply,
   requestId,
   initialStatus,
+  initialSent,
 }: {
   initialReply: string;
   requestId: number;
   initialStatus: string;
+  initialSent: boolean;
 }) {
   const [reply, setReply] = useState(initialReply);
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState(initialStatus);
   const [sending, setSending] = useState(false);
-const [sent, setSent] = useState(false);
+const [sent, setSent] = useState(initialSent);
 const [sendError, setSendError] = useState("");
 const supabase = createClient();
 async function markAsDone() {
@@ -96,7 +98,7 @@ async function sendReply() {
       <button
   type="button"
   onClick={sendReply}
-  disabled={sending || !reply.trim()}
+  disabled={sending || sent || !reply.trim()}
   className="ml-3 mt-3 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
 >
   {sending ? "Wird gesendet..." : sent ? "Gesendet ✓" : "Antwort senden"}
