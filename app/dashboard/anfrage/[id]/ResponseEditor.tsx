@@ -14,7 +14,9 @@ export default function ResponseEditor({
   const [reply, setReply] = useState(initialReply);
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState(initialStatus);
-
+  const [sending, setSending] = useState(false);
+const [sent, setSent] = useState(false);
+const [sendError, setSendError] = useState("");
 const supabase = createClient();
 async function markAsDone() {
   const { error } = await supabase
@@ -38,7 +40,40 @@ setStatus("erledigt");
       setCopied(false);
     }, 2000);
   }
+async function sendReply() {
+  setSending(true);
+  setSent(false);
+  setSendError("");
 
+  try {
+    const response = await fetch("/api/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        requestId,
+        text: reply,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "E-Mail konnte nicht gesendet werden.");
+    }
+
+    setSent(true);
+  } catch (error) {
+    setSendError(
+      error instanceof Error
+        ? error.message
+        : "E-Mail konnte nicht gesendet werden."
+    );
+  } finally {
+    setSending(false);
+  }
+}
   return (
     <div className="mt-6">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -58,6 +93,19 @@ setStatus("erledigt");
       >
         {copied ? "Kopiert ✓" : "Antwort kopieren"}
       </button>
+      <button
+  type="button"
+  onClick={sendReply}
+  disabled={sending || !reply.trim()}
+  className="ml-3 mt-3 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {sending ? "Wird gesendet..." : sent ? "Gesendet ✓" : "Antwort senden"}
+</button>
+{sendError && (
+  <p className="mt-2 text-sm font-medium text-red-600">
+    {sendError}
+  </p>
+)}
       <button
   type="button"
   onClick={markAsDone}
