@@ -26,6 +26,22 @@ export default async function AnfrageDetailPage({
   if (!request) {
     return <main className="p-6">Anfrage nicht gefunden.</main>;
   }
+  let analysis = null;
+
+if (
+  request.ai_category &&
+  request.ai_priority &&
+  request.ai_intent &&
+  request.ai_reply
+) {
+  analysis = {
+    category: request.ai_category,
+    priority: request.ai_priority,
+    intent: request.ai_intent,
+    reply: request.ai_reply,
+  };
+}
+if (!analysis) {
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 const response = await fetch(`${baseUrl}/api/analyze`, {
@@ -41,7 +57,19 @@ const response = await fetch(`${baseUrl}/api/analyze`, {
 });
 
 const data = await response.json();
-const analysis = data.analysis;
+analysis = data.analysis;
+if (analysis) {
+  await supabase
+    .from("customer_requests")
+    .update({
+      ai_category: analysis.category,
+      ai_priority: analysis.priority,
+      ai_intent: analysis.intent,
+      ai_reply: analysis.reply,
+    })
+    .eq("id", id);
+}
+}
   return (
     <main className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-4xl">
