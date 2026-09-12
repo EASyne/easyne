@@ -17,7 +17,26 @@ export async function POST(request: Request) {
     });
 
     console.log("Verifizierter Resend Webhook:", event);
+    if (event.type === "email.received") {
+  const { data: email, error } = await resend.emails.receiving.get(
+    event.data.email_id
+  );
 
+  if (error) {
+    console.error("E-Mail-Inhalt konnte nicht geladen werden:", error);
+
+    return Response.json(
+      { success: false },
+      { status: 500 }
+    );
+  }
+
+  console.log("Empfangene E-Mail:", {
+    from: email.from,
+    subject: email.subject,
+    text: email.text,
+  });
+}
     return Response.json({
       success: true,
     });
