@@ -1,7 +1,16 @@
 import { Resend } from "resend";
-
+import { createClient } from "@supabase/supabase-js";
 const resend = new Resend(process.env.RESEND_API_KEY);
-
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 export async function POST(request: Request) {
   try {
     const payload = await request.text();
@@ -36,6 +45,32 @@ export async function POST(request: Request) {
     subject: email.subject,
     text: email.text,
   });
+  const from = email.from ?? "";
+const emailMatch = from.match(/<([^>]+)>/);
+const customerEmail = emailMatch ? emailMatch[1] : from;
+
+const { error: insertError } = await supabaseAdmin
+  .from("customer_requests")
+  .insert({
+    costumer_mail: customerEmail,
+    subject: email.subject || "Ohne Betreff",
+    message: email.text || "Keine Textnachricht vorhanden.",
+    status: "neu",
+    resend_email_id: event.data.email_id,
+  });
+
+if (insertError) {
+  if (insertError.code === "23505") {
+    console.log("E-Mail wurde bereits gespeichert:", event.data.email_id);
+  } else {
+    console.error("Kundenanfrage konnte nicht gespeichert werden:", insertError);
+
+    return Response.json(
+      { success: false },
+      { status: 500 }
+    );
+  }
+}
 }
     return Response.json({
       success: true,
