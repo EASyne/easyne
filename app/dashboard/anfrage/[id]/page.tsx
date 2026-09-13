@@ -26,6 +26,12 @@ export default async function AnfrageDetailPage({
   if (!request) {
     return <main className="p-6">Anfrage nicht gefunden.</main>;
   }
+  const { data: customerHistory } = await supabase
+  .from("customer_requests")
+  .select("id, created_at, subject, status")
+  .eq("costumer_mail", request.costumer_mail)
+  .neq("id", request.id)
+  .order("created_at", { ascending: false });
   let analysis = null;
 
 if (
@@ -90,6 +96,36 @@ if (analysis) {
             {request.message}
           </p>
         </div>
+        {customerHistory && customerHistory.length > 0 && (
+  <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <p className="text-sm font-semibold text-violet-600">
+      Kundenverlauf
+    </p>
+
+    <h2 className="mt-2 text-xl font-bold text-slate-900">
+      Frühere Anfragen
+    </h2>
+
+    <div className="mt-4 space-y-3">
+      {customerHistory.map((item) => (
+        <a
+          key={item.id}
+          href={`/dashboard/anfrage/${item.id}`}
+          className="block rounded-xl border border-slate-200 p-4 transition hover:border-violet-300"
+        >
+          <p className="font-semibold text-slate-900">
+            {item.subject}
+          </p>
+
+          <p className="mt-1 text-sm text-slate-500">
+            {new Date(item.created_at).toLocaleDateString("de-CH")} ·{" "}
+            {item.status === "erledigt" ? "Erledigt" : "Offen"}
+          </p>
+        </a>
+      ))}
+    </div>
+  </div>
+)}
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <p className="text-sm font-semibold text-violet-600">
     EASyne KI-Analyse
