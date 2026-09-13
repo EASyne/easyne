@@ -1,7 +1,21 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "../utils/supabase-server";
 import LogoutButton from "./LogoutButton";
-export default async function DashboardPage() {
+import RequestFilters from "./RequestFilters";
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+  search?: string;
+  status?: string;
+  priority?: string;
+}>;
+}) {
+    const {
+  search = "",
+  status = "alle",
+  priority = "alle",
+} = await searchParams;
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -15,11 +29,39 @@ const { data: requests, error } = await supabase
   if (error) {
   console.error("Fehler beim Laden der Kundenanfragen:", error);
 }
-const openRequests = requests?.filter(
+const normalizedSearch = search.toLowerCase().trim();
+const statusFilteredRequests = requests?.filter((request) => {
+  if (status === "neu") {
+    return request.status !== "erledigt";
+  }
+
+  if (status === "erledigt") {
+    return request.status === "erledigt";
+  }
+
+  return true;
+});
+const priorityFilteredRequests = statusFilteredRequests?.filter((request) => {
+  if (priority === "alle") {
+    return true;
+  }
+
+  return request.ai_priority === priority;
+});
+const filteredRequests = priorityFilteredRequests?.filter((request) => {
+  if (!normalizedSearch) return true;
+
+  return (
+    request.subject?.toLowerCase().includes(normalizedSearch) ||
+    request.message?.toLowerCase().includes(normalizedSearch) ||
+    request.costumer_mail?.toLowerCase().includes(normalizedSearch)
+  );
+});
+const openRequests = filteredRequests?.filter(
   (request) => request.status !== "erledigt"
 );
 
-const doneRequests = requests?.filter(
+const doneRequests = filteredRequests?.filter(
   (request) => request.status === "erledigt"
 );
   if (!user) {
@@ -39,6 +81,7 @@ const doneRequests = requests?.filter(
 
     <LogoutButton />
   </div>
+  <RequestFilters />
   <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <div className="flex items-center justify-between">
     <div>
