@@ -41,14 +41,35 @@ export async function POST(request: Request) {
   }
 
   console.log("Empfangene E-Mail:", {
-    from: email.from,
-    subject: email.subject,
-    text: email.text,
-  });
+  from: email.from,
+  to: email.to,
+  subject: email.subject,
+  text: email.text,
+});
   const from = email.from ?? "";
 const emailMatch = from.match(/<([^>]+)>/);
 const customerEmail = emailMatch ? emailMatch[1] : from;
+const recipients = Array.isArray(event.data.to)
+  ? event.data.to
+  : [event.data.to];
 
+const { data: company, error: companyError } = await supabaseAdmin
+  .from("companies")
+  .select("id")
+  .in("inbound_email", recipients)
+  .maybeSingle();
+
+if (companyError || !company) {
+  console.error("Keine passende Firma gefunden:", {
+    recipients,
+    companyError,
+  });
+
+  return Response.json(
+    { success: false, error: "Keine passende Firma gefunden" },
+    { status: 400 }
+  );
+}
 const { error: insertError } = await supabaseAdmin
   .from("customer_requests")
   .insert({
@@ -57,6 +78,7 @@ const { error: insertError } = await supabaseAdmin
     message: email.text || "Keine Textnachricht vorhanden.",
     status: "neu",
     resend_email_id: event.data.email_id,
+    company_id: company.id,
   });
 
 if (insertError) {
