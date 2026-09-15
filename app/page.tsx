@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
+import ContactForm from "./ContactForm";
 export default function Home() {
   const [message, setMessage] = useState("");
 const [result, setResult] = useState<string | null>(null);
@@ -586,28 +586,32 @@ Vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und melden uns 
       </section>
 
       <section id="kontakt" className="px-6 pb-24 lg:px-8">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#0b1030] via-[#171057] to-[#3020a6] px-8 py-12 text-white shadow-2xl md:px-14 md:py-16">
-          <div className="grid gap-10 lg:grid-cols-[1.3fr_auto] lg:items-center">
-            <div>
-              <h2 className="max-w-3xl text-4xl font-bold leading-tight">
-                Bereit, Ihrem Unternehmen die Routinearbeit abzunehmen?
-              </h2>
+  <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#0b1030] via-[#171057] to-[#3020a6] px-8 py-12 text-white shadow-2xl md:px-12 md:py-16">
+    <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+      <div>
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-violet-300">
+          Kontakt
+        </p>
 
-              <p className="mt-5 max-w-2xl leading-7 text-indigo-100">
-                Lassen Sie uns gemeinsam herausfinden, welches
-                Automatisierungspotenzial in Ihren Prozessen steckt.
-              </p>
-            </div>
+        <h2 className="text-3xl font-bold leading-tight md:text-4xl">
+          Haben Sie Fragen zu EASyne?
+        </h2>
 
-            <a
-              href="mailto:ermal.easyne@outlook.com"
-              className="rounded-xl bg-white px-7 py-4 text-center font-semibold text-slate-950 transition hover:scale-[1.02]"
-            >
-              Kostenlose Analyse sichern →
-            </a>
-          </div>
-        </div>
-      </section>
+        <p className="mt-5 max-w-xl leading-7 text-indigo-100">
+          Möchten Sie mehr über EASyne erfahren oder herausfinden, wie wir Ihr
+          Unternehmen unterstützen können? Schreiben Sie uns – wir melden uns
+          gerne bei Ihnen.
+        </p>
+
+        <p className="mt-6 text-sm text-indigo-200">
+          E-Mail: support@easyne.ch
+        </p>
+      </div>
+
+      <ContactForm />
+    </div>
+  </div>
+</section>
 
       <footer className="border-t border-slate-200">
   <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500">
