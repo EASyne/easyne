@@ -1,9 +1,32 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
+const rateLimit = new Map<string, { count: number; resetTime: number }>();
 export async function POST(request: Request) {
   try {
+  const ip =
+  request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+  request.headers.get("x-real-ip") ||
+  "unknown";
+
+const now = Date.now();
+const current = rateLimit.get(ip);
+
+if (!current || now > current.resetTime) {
+  rateLimit.set(ip, {
+    count: 1,
+    resetTime: now + 60_000,
+  });
+} else {
+  if (current.count >= 3) {
+    return Response.json(
+      { error: "Zu viele Anfragen. Bitte versuchen Sie es in einer Minute erneut." },
+      { status: 429 }
+    );
+  }
+
+  current.count += 1;
+}  
     const { name, email, company, message } = await request.json();
 
     if (!name || !email || !message) {

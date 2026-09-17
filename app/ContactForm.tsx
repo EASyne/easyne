@@ -31,10 +31,16 @@ export default function ContactForm() {
     });
 
     if (!response.ok) {
-      setError("Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.");
-      setLoading(false);
-      return;
-    }
+  const data = await response.json().catch(() => null);
+
+  setError(
+    data?.error ||
+      "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+  );
+
+  setLoading(false);
+  return;
+}
 
     form.reset();
     setSuccess(true);
