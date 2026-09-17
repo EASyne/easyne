@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
+import { analyzeRequest } from "../../utils/analyze-request";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,7 +63,7 @@ if (companyError || !company) {
     { status: 400 }
   );
 }
-const { error: insertError } = await supabaseAdmin
+const { data: insertedRequest, error: insertError } = await supabaseAdmin
   .from("customer_requests")
   .insert({
     costumer_mail: customerEmail,
@@ -71,8 +72,9 @@ const { error: insertError } = await supabaseAdmin
     status: "neu",
     resend_email_id: event.data.email_id,
     company_id: company.id,
-  });
-
+  })
+.select("id")
+.single();
 if (insertError) {
   if (insertError.code === "23505") {
     console.log("E-Mail wurde bereits gespeichert.");
@@ -84,6 +86,30 @@ if (insertError) {
       { status: 500 }
     );
   }
+  if (insertedRequest) {
+  try {
+    const analysis = await analyzeRequest(
+      email.text || "Keine Textnachricht vorhanden.",
+      "Deutsch"
+    );
+
+    const { error: analysisError } = await supabaseAdmin
+      .from("customer_requests")
+      .update({
+        ai_category: analysis.category,
+        ai_priority: analysis.priority,
+        ai_intent: analysis.intent,
+        ai_reply: analysis.reply,
+      })
+      .eq("id", (insertedRequest as { id: number }).id);
+
+    if (analysisError) {
+      console.error("KI-Analyse konnte nicht gespeichert werden:", analysisError);
+    }
+  } catch (error) {
+    console.error("Automatische KI-Analyse fehlgeschlagen:", error);
+  }
+}
 }
 }
     return Response.json({
