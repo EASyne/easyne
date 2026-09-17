@@ -40,12 +40,7 @@ export async function POST(request: Request) {
     );
   }
 
-  console.log("Empfangene E-Mail:", {
-  from: email.from,
-  to: email.to,
-  subject: email.subject,
-  text: email.text,
-});
+  
   const from = email.from ?? "";
 const emailMatch = from.match(/<([^>]+)>/);
 const customerEmail = emailMatch ? emailMatch[1] : from;
@@ -60,10 +55,7 @@ const { data: company, error: companyError } = await supabaseAdmin
   .maybeSingle();
 
 if (companyError || !company) {
-  console.error("Keine passende Firma gefunden:", {
-    recipients,
-    companyError,
-  });
+  console.error("Keine passende Firma gefunden:", companyError);
 
   return Response.json(
     { success: false, error: "Keine passende Firma gefunden" },
@@ -83,7 +75,7 @@ const { error: insertError } = await supabaseAdmin
 
 if (insertError) {
   if (insertError.code === "23505") {
-    console.log("E-Mail wurde bereits gespeichert:", event.data.email_id);
+    console.log("E-Mail wurde bereits gespeichert.");
   } else {
     console.error("Kundenanfrage konnte nicht gespeichert werden:", insertError);
 
