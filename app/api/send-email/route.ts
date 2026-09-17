@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { createServerSupabaseClient } from "../../utils/supabase-server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
+const rateLimit = new Map<string, { count: number; resetTime: number }>();
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -17,7 +17,27 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+const now = Date.now();
+const current = rateLimit.get(user.id);
 
+if (!current || now > current.resetTime) {
+  rateLimit.set(user.id, {
+    count: 1,
+    resetTime: now + 60_000,
+  });
+} else {
+  if (current.count >= 5) {
+    return Response.json(
+      {
+        success: false,
+        error: "Zu viele E-Mails. Bitte warten Sie eine Minute.",
+      },
+      { status: 429 }
+    );
+  }
+
+  current.count += 1;
+}
     const body = await request.json();
     const requestId = Number(body.requestId);
     const text = String(body.text ?? "").trim();
