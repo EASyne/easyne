@@ -1,11 +1,27 @@
 import OpenAI from "openai";
-
+import { createServerSupabaseClient } from "../../utils/supabase-server";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 export async function POST(request: Request) {
   try {
+    const supabase = await createServerSupabaseClient();
+
+const {
+  data: { user },
+  error: authError,
+} = await supabase.auth.getUser();
+
+if (authError || !user) {
+  return Response.json(
+    {
+      success: false,
+      error: "Nicht autorisiert.",
+    },
+    { status: 401 }
+  );
+}
     const ip =
   request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
   request.headers.get("x-real-ip") ||
