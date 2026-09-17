@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "../../../utils/supabase-server";
+import { analyzeRequest } from "../../../utils/analyze-request";
 import { redirect } from "next/navigation";
 import ResponseEditor from "./ResponseEditor";
 export default async function AnfrageDetailPage({
@@ -48,21 +49,9 @@ if (
   };
 }
 if (!analysis) {
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-
-const response = await fetch(`${baseUrl}/api/analyze`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    message: request.message,
-    language: "Deutsch",
-  }),
-  cache: "no-store",
-});
-
-const data = await response.json();
+const data = {
+  analysis: await analyzeRequest(request.message, "Deutsch"),
+};
 analysis = data.analysis;
 if (analysis) {
   await supabase
