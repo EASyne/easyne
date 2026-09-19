@@ -1,5 +1,30 @@
 import { createClient } from "@supabase/supabase-js";
+const registerAttempts = new Map<
+  string,
+  { count: number; resetAt: number }
+>();
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000;
+  const maxAttempts = 3;
 
+  const entry = registerAttempts.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    registerAttempts.set(ip, {
+      count: 1,
+      resetAt: now + windowMs,
+    });
+    return false;
+  }
+
+  if (entry.count >= maxAttempts) {
+    return true;
+  }
+
+  entry.count += 1;
+  return false;
+}
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -12,6 +37,18 @@ const supabaseAdmin = createClient(
 );
 export async function POST(request: Request) {
   try {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";
+
+if (isRateLimited(ip)) {
+  return Response.json(
+    {
+      success: false,
+      error: "Zu viele Registrierungsversuche. Bitte versuchen Sie es später erneut.",
+    },
+    { status: 429 }
+  );
+}
     const body = await request.json();
 
     const companyName = String(body.companyName ?? "").trim();
