@@ -53,9 +53,8 @@ if (isRateLimited(ip)) {
 
     const companyName = String(body.companyName ?? "").trim();
     const email = String(body.email ?? "").trim().toLowerCase();
-    const password = String(body.password ?? "");
     const userId = String(body.userId ?? "").trim();
-    if (!companyName || !email || !password || !userId) {
+    if (!companyName || !email || !userId) {
       return Response.json(
         { success: false, error: "Bitte füllen Sie alle Felder aus." },
         { status: 400 }
@@ -103,15 +102,6 @@ if (existingProfile) {
     { status: 409 }
   );
 }
-    if (password.length < 8) {
-      return Response.json(
-        {
-          success: false,
-          error: "Das Passwort muss mindestens 8 Zeichen lang sein.",
-        },
-        { status: 400 }
-      );
-    }
     
 
 const emailSlug = companyName

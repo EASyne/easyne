@@ -45,7 +45,6 @@ if (signUpError || !signUpData.user) {
   body: JSON.stringify({
     companyName,
     email,
-    password,
     userId: signUpData.user.id,
   }),
 });
