@@ -24,7 +24,17 @@ async function handleRegister() {
   });
 
 if (signUpError || !signUpData.user) {
-  alert(signUpError?.message || "Registrierung fehlgeschlagen.");
+  const message = signUpError?.message?.toLowerCase() || "";
+
+  if (
+    message.includes("already registered") ||
+    message.includes("already exists")
+  ) {
+    alert("Für diese E-Mail-Adresse besteht bereits ein Konto. Bitte melden Sie sich an.");
+    return;
+  }
+
+  alert("Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.");
   return;
 }
   const response = await fetch("/api/register", {
