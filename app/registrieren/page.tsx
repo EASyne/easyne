@@ -52,6 +52,16 @@ if (signUpError || !signUpData.user) {
 const data = await response.json();
 
 if (!response.ok) {
+  if (
+    response.status === 409 ||
+    data.error === "Benutzer konnte nicht verifiziert werden."
+  ) {
+    alert(
+      "Für diese E-Mail-Adresse besteht möglicherweise bereits ein Konto. Bitte melden Sie sich an."
+    );
+    return;
+  }
+
   alert(data.error || "Registrierung fehlgeschlagen.");
   return;
 }
