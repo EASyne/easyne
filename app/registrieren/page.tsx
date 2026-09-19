@@ -47,7 +47,7 @@ if (!response.ok) {
   return;
 }
 
-alert("Unternehmen wurde erfolgreich registriert.");
+alert("Registrierung erfolgreich! Bitte bestätigen Sie jetzt Ihre E-Mail-Adresse über den Link, den wir Ihnen geschickt haben.");
 }
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
