@@ -77,6 +77,32 @@ if (
     { status: 400 }
   );
 }
+const { data: existingProfile, error: existingProfileError } =
+  await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+if (existingProfileError) {
+  return Response.json(
+    {
+      success: false,
+      error: "Registrierung konnte nicht geprüft werden.",
+    },
+    { status: 500 }
+  );
+}
+
+if (existingProfile) {
+  return Response.json(
+    {
+      success: false,
+      error: "Für diese E-Mail besteht bereits ein EASyne-Konto.",
+    },
+    { status: 409 }
+  );
+}
     if (password.length < 8) {
       return Response.json(
         {
@@ -108,7 +134,7 @@ const { data: company, error: companyError } = await supabaseAdmin
   .single();
 
 if (companyError || !company) {
-  await supabaseAdmin.auth.admin.deleteUser(userId);
+  
 
   return Response.json(
     {
@@ -127,7 +153,6 @@ const { error: profileError } = await supabaseAdmin
 
 if (profileError) {
   await supabaseAdmin.from("companies").delete().eq("id", company.id);
-  await supabaseAdmin.auth.admin.deleteUser(userId);
 
   return Response.json(
     {
