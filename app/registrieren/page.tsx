@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "../utils/supabase";
 export default function RegistrierenPage() {
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const supabase = createClient();
 async function handleRegister() {
   if (!companyName.trim() || !email.trim() || !password.trim()) {
     alert("Bitte füllen Sie alle Felder aus.");
@@ -15,6 +17,16 @@ async function handleRegister() {
     alert("Das Passwort muss mindestens 8 Zeichen lang sein.");
     return;
   }
+  const { data: signUpData, error: signUpError } =
+  await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+if (signUpError || !signUpData.user) {
+  alert(signUpError?.message || "Registrierung fehlgeschlagen.");
+  return;
+}
   const response = await fetch("/api/register", {
   method: "POST",
   headers: {
@@ -24,6 +36,7 @@ async function handleRegister() {
     companyName,
     email,
     password,
+    userId: signUpData.user.id,
   }),
 });
 

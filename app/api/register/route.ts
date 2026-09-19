@@ -17,14 +17,29 @@ export async function POST(request: Request) {
     const companyName = String(body.companyName ?? "").trim();
     const email = String(body.email ?? "").trim().toLowerCase();
     const password = String(body.password ?? "");
-
-    if (!companyName || !email || !password) {
+    const userId = String(body.userId ?? "").trim();
+    if (!companyName || !email || !password || !userId) {
       return Response.json(
         { success: false, error: "Bitte füllen Sie alle Felder aus." },
         { status: 400 }
       );
     }
+    const { data: userData, error: userError } =
+  await supabaseAdmin.auth.admin.getUserById(userId);
 
+if (
+  userError ||
+  !userData.user ||
+  userData.user.email?.toLowerCase() !== email
+) {
+  return Response.json(
+    {
+      success: false,
+      error: "Benutzer konnte nicht verifiziert werden.",
+    },
+    { status: 400 }
+  );
+}
     if (password.length < 8) {
       return Response.json(
         {
@@ -34,24 +49,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    const { data: authData, error: authError } =
-  await supabaseAdmin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-  });
+    
 
-if (authError || !authData.user) {
-  return Response.json(
-    {
-      success: false,
-      error: authError?.message || "Benutzer konnte nicht erstellt werden.",
-    },
-    { status: 400 }
-  );
-}
-
-const userId = authData.user.id;
 const emailSlug = companyName
   .toLowerCase()
   .normalize("NFD")
