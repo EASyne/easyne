@@ -1,32 +1,54 @@
 import { Resend } from "resend";
-
+import { createClient } from "@supabase/supabase-js";
 const resend = new Resend(process.env.RESEND_API_KEY);
-const rateLimit = new Map<string, { count: number; resetTime: number }>();
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 export async function POST(request: Request) {
   try {
   const ip =
   request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
   request.headers.get("x-real-ip") ||
   "unknown";
+ const ipHash = await crypto.subtle.digest(
+  "SHA-256",
+  new TextEncoder().encode(ip)
+);
 
-const now = Date.now();
-const current = rateLimit.get(ip);
+const ipHashHex = Array.from(new Uint8Array(ipHash))
+  .map((byte) => byte.toString(16).padStart(2, "0"))
+  .join("");
 
-if (!current || now > current.resetTime) {
-  rateLimit.set(ip, {
-    count: 1,
-    resetTime: now + 60_000,
+const { data: rateLimited, error: rateLimitError } =
+  await supabaseAdmin.rpc("check_contact_rate_limit", {
+    p_ip_hash: ipHashHex,
   });
-} else {
-  if (current.count >= 3) {
-    return Response.json(
-      { error: "Zu viele Anfragen. Bitte versuchen Sie es in einer Minute erneut." },
-      { status: 429 }
-    );
-  }
 
-  current.count += 1;
-}  
+if (rateLimitError) {
+  console.error("Contact rate limit error:", rateLimitError);
+
+  return Response.json(
+    { error: "Anfrage konnte nicht verarbeitet werden." },
+    { status: 500 }
+  );
+}
+
+if (rateLimited) {
+  return Response.json(
+    {
+      error:
+        "Zu viele Anfragen. Bitte versuchen Sie es in einer Minute erneut.",
+    },
+    { status: 429 }
+  );
+}
     const { name, email, company, message } = await request.json();
 
     if (!name || !email || !message) {
