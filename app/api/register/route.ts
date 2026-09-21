@@ -1,30 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-const registerAttempts = new Map<
-  string,
-  { count: number; resetAt: number }
->();
-function isRateLimited(ip: string) {
-  const now = Date.now();
-  const windowMs = 60 * 60 * 1000;
-  const maxAttempts = 3;
 
-  const entry = registerAttempts.get(ip);
 
-  if (!entry || now > entry.resetAt) {
-    registerAttempts.set(ip, {
-      count: 1,
-      resetAt: now + windowMs,
-    });
-    return false;
-  }
-
-  if (entry.count >= maxAttempts) {
-    return true;
-  }
-
-  entry.count += 1;
-  return false;
-}
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -39,16 +15,39 @@ export async function POST(request: Request) {
   try {
     const forwardedFor = request.headers.get("x-forwarded-for");
 const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";
+const ipHash = await crypto.subtle.digest(
+  "SHA-256",
+  new TextEncoder().encode(ip)
+);
 
-if (isRateLimited(ip)) {
+const ipHashHex = Array.from(new Uint8Array(ipHash))
+  .map((byte) => byte.toString(16).padStart(2, "0"))
+  .join("");
+
+const { data: rateLimited, error: rateLimitError } =
+  await supabaseAdmin.rpc("check_registration_rate_limit", {
+    p_ip_hash: ipHashHex,
+  });
+
+if (rateLimitError) {
+  console.error("Registration rate limit error:", rateLimitError);
+  return Response.json(
+    { success: false, error: "Registrierung konnte nicht verarbeitet werden." },
+    { status: 500 }
+  );
+}
+
+if (rateLimited) {
   return Response.json(
     {
       success: false,
-      error: "Zu viele Registrierungsversuche. Bitte versuchen Sie es später erneut.",
+      error:
+        "Zu viele Registrierungsversuche. Bitte versuchen Sie es später erneut.",
     },
     { status: 429 }
   );
 }
+
     const body = await request.json();
 
     const companyName = String(body.companyName ?? "").trim();
