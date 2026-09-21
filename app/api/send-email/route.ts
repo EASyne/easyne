@@ -1,8 +1,17 @@
 import { Resend } from "resend";
 import { createServerSupabaseClient } from "../../utils/supabase-server";
-
+import { createClient } from "@supabase/supabase-js";
 const resend = new Resend(process.env.RESEND_API_KEY);
-const rateLimit = new Map<string, { count: number; resetTime: number }>();
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -17,27 +26,32 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-const now = Date.now();
-const current = rateLimit.get(user.id);
-
-if (!current || now > current.resetTime) {
-  rateLimit.set(user.id, {
-    count: 1,
-    resetTime: now + 60_000,
+    const { data: rateLimited, error: rateLimitError } =
+  await supabaseAdmin.rpc("check_email_send_rate_limit", {
+    p_user_id: user.id,
   });
-} else {
-  if (current.count >= 5) {
-    return Response.json(
-      {
-        success: false,
-        error: "Zu viele E-Mails. Bitte warten Sie eine Minute.",
-      },
-      { status: 429 }
-    );
-  }
 
-  current.count += 1;
+if (rateLimitError) {
+  console.error("Email rate limit error:", rateLimitError);
+
+  return Response.json(
+    { success: false, error: "E-Mail konnte nicht verarbeitet werden." },
+    { status: 500 }
+  );
 }
+
+if (rateLimited) {
+  return Response.json(
+    {
+      success: false,
+      error:
+        "Zu viele E-Mails in kurzer Zeit. Bitte versuchen Sie es in einer Minute erneut.",
+    },
+    { status: 429 }
+  );
+}
+    
+
     const body = await request.json();
     const requestId = Number(body.requestId);
     const text = String(body.text ?? "").trim();
