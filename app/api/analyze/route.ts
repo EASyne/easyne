@@ -1,8 +1,19 @@
 import { createServerSupabaseClient } from "../../utils/supabase-server";
 import { analyzeRequest } from "../../utils/analyze-request";
-const rateLimit = new Map<string, { count: number; resetTime: number }>();
+import { createClient } from "@supabase/supabase-js";
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 export async function POST(request: Request) {
   try {
+    
     const supabase = await createServerSupabaseClient();
 
 const {
@@ -19,31 +30,34 @@ if (authError || !user) {
     { status: 401 }
   );
 }
-    const ip =
-  request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-  request.headers.get("x-real-ip") ||
-  "unknown";
-  const now = Date.now();
-const current = rateLimit.get(ip);
-
-if (!current || now > current.resetTime) {
-  rateLimit.set(ip, {
-    count: 1,
-    resetTime: now + 60_000,
+const { data: rateLimited, error: rateLimitError } =
+  await supabaseAdmin.rpc("check_analyze_rate_limit", {
+    p_user_id: user.id,
   });
-} else {
-  if (current.count >= 3) {
-    return Response.json(
-      {
-        success: false,
-        error: "Zu viele Analysen in kurzer Zeit. Bitte warten Sie eine Minute.",
-      },
-      { status: 429 }
-    );
-  }
 
-  current.count += 1;
+if (rateLimitError) {
+  console.error("Analyze rate limit error:", rateLimitError);
+
+  return Response.json(
+    {
+      success: false,
+      error: "Analyse konnte nicht verarbeitet werden.",
+    },
+    { status: 500 }
+  );
 }
+
+if (rateLimited) {
+  return Response.json(
+    {
+      success: false,
+      error:
+        "Zu viele Analysen in kurzer Zeit. Bitte warten Sie eine Minute.",
+    },
+    { status: 429 }
+  );
+}
+  
     const body = await request.json();
 const message = String(body.message ?? "").trim();
 const language = String(body.language ?? "Deutsch");
