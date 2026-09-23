@@ -26,7 +26,6 @@ export async function POST(request: Request) {
       webhookSecret: process.env.RESEND_WEBHOOK_SECRET ?? "",
     });
 
-    console.log("Verifizierter Resend Webhook:", event);
     if (event.type === "email.received") {
   const { data: email, error } = await resend.emails.receiving.get(
     event.data.email_id
