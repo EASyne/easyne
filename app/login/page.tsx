@@ -61,6 +61,15 @@ onChange={(e) => setPassword(e.target.value)}
 >
   Anmelden
 </button>
+<p className="mt-4 text-center text-sm text-slate-600">
+  Noch kein Konto?{" "}
+  <a
+    href="/registrieren"
+    className="font-semibold text-violet-600 hover:underline"
+  >
+    Jetzt registrieren
+  </a>
+</p>
 </div>
     </main>
   );
