@@ -50,9 +50,14 @@ if (rateLimited) {
 
     const body = await request.json();
 
-    const companyName = String(body.companyName ?? "").trim();
-    const email = String(body.email ?? "").trim().toLowerCase();
-    const userId = String(body.userId ?? "").trim();
+    const companyName =
+  typeof body.companyName === "string" ? body.companyName.trim() : "";
+
+const email =
+  typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+
+const userId =
+  typeof body.userId === "string" ? body.userId.trim() : "";
     if (!companyName || !email || !userId) {
       return Response.json(
         { success: false, error: "Bitte füllen Sie alle Felder aus." },

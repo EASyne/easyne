@@ -51,12 +51,24 @@ if (rateLimited) {
 }
     const { name, email, company, message } = await request.json();
 
-    if (!name || !email || !message) {
-      return Response.json(
-        { error: "Bitte füllen Sie alle Pflichtfelder aus." },
-        { status: 400 }
-      );
-    }
+    if (
+  typeof name !== "string" ||
+  typeof email !== "string" ||
+  typeof message !== "string" ||
+  (company !== undefined && typeof company !== "string") ||
+  name.trim().length < 2 ||
+  name.trim().length > 100 ||
+  email.trim().length > 254 ||
+  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
+  message.trim().length < 2 ||
+  message.trim().length > 5000 ||
+  (typeof company === "string" && company.trim().length > 150)
+) {
+  return Response.json(
+    { error: "Bitte überprüfen Sie Ihre Eingaben." },
+    { status: 400 }
+  );
+}
 
     const { error } = await resend.emails.send({
       from: "EASyne <support@easyne.ch>",

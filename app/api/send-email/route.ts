@@ -54,7 +54,8 @@ if (rateLimited) {
 
     const body = await request.json();
     const requestId = Number(body.requestId);
-    const text = String(body.text ?? "").trim();
+    const text =
+  typeof body.text === "string" ? body.text.trim() : "";
 
     if (!Number.isInteger(requestId) || requestId <= 0) {
       return Response.json(

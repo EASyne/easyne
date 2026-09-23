@@ -59,8 +59,11 @@ if (rateLimited) {
 }
   
     const body = await request.json();
-const message = String(body.message ?? "").trim();
-const language = String(body.language ?? "Deutsch");
+const message =
+  typeof body.message === "string" ? body.message.trim() : "";
+
+const language =
+  typeof body.language === "string" ? body.language.trim() : "Deutsch";
 if (!message) {
   return Response.json(
     {
