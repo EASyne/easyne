@@ -22,6 +22,19 @@ export default async function DashboardPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) {
+  redirect("/login");
+}
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("company_id")
+  .eq("id", user.id)
+  .single();
+  const { data: company } = await supabase
+  .from("companies")
+  .select("subscription_status")
+  .eq("id", profile?.company_id)
+  .single();
 const { data: requests, error } = await supabase
   .from("customer_requests")
   .select("*")
@@ -65,9 +78,7 @@ const openRequests = filteredRequests?.filter(
 const doneRequests = filteredRequests?.filter(
   (request) => request.status === "erledigt"
 );
-  if (!user) {
-    redirect("/login");
-  }
+
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -81,7 +92,9 @@ const doneRequests = filteredRequests?.filter(
     </div>
 
     <div className="flex items-center gap-3">
+  {!["trialing", "active"].includes(company?.subscription_status ?? "") && (
   <SubscriptionButton />
+)}
   <LogoutButton />
 </div>
   </div>
