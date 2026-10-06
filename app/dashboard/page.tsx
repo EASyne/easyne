@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "../utils/supabase-server";
 import LogoutButton from "./LogoutButton";
 import RequestFilters from "./RequestFilters";
+import SubscriptionButton from "./SubscriptionButton";
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -79,7 +80,10 @@ const doneRequests = filteredRequests?.filter(
       </h1>
     </div>
 
-    <LogoutButton />
+    <div className="flex items-center gap-3">
+  <SubscriptionButton />
+  <LogoutButton />
+</div>
   </div>
   <RequestFilters />
   <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
