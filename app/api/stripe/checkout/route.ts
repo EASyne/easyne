@@ -53,7 +53,8 @@ if (companyError || !company) {
   );
 } 
 if (
-  company.stripe_subscription_id ||
+  (company.stripe_subscription_id &&
+    company.subscription_status !== "canceled") ||
   company.subscription_status === "checkout_pending"
 ) {
   return Response.json(
