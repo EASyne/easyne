@@ -51,7 +51,7 @@ const { data: profile } = await supabase
 }
   const { data: company } = await supabase
   .from("companies")
-  .select("subscription_status")
+  .select("subscription_status, inbound_email")
   .eq("id", profile?.company_id)
   .single();
 const { data: requests, error } = await supabase
@@ -108,6 +108,14 @@ const doneRequests = filteredRequests?.filter(
       <h1 className="text-3xl font-bold text-slate-900">
         Firmen-Dashboard
       </h1>
+      {company?.inbound_email && (
+  <p className="mt-2 text-sm text-slate-600">
+    Ihre EASyne-E-Mail-Adresse:{" "}
+    <span className="font-semibold text-slate-900">
+      {company.inbound_email}
+    </span>
+  </p>
+)}
     </div>
 
     <div className="flex items-center gap-3">
