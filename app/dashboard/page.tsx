@@ -1,8 +1,19 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "../utils/supabase-server";
+import { createClient } from "@supabase/supabase-js";
 import LogoutButton from "./LogoutButton";
 import RequestFilters from "./RequestFilters";
 import SubscriptionButton from "./SubscriptionButton";
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -34,7 +45,7 @@ const { data: profile } = await supabase
   .eq("id", user.id)
   .single();
   if (checkout === "cancel" && profile?.company_id) {
-  await supabase.rpc("release_stripe_checkout", {
+  await supabaseAdmin.rpc("release_stripe_checkout", {
     p_company_id: profile.company_id,
   });
 }
