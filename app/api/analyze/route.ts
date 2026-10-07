@@ -83,7 +83,32 @@ if (message.length > 3000) {
     { status: 400 }
   );
 }
-   const analysis = await analyzeRequest(message, language); 
+const { data: profile, error: profileError } = await supabase
+  .from("profiles")
+  .select("company_id")
+  .eq("id", user.id)
+  .single();
+
+if (profileError || !profile?.company_id) {
+  return Response.json(
+    { success: false, error: "Firma konnte nicht ermittelt werden." },
+    { status: 500 }
+  );
+}
+
+const { data: company, error: companyError } = await supabase
+  .from("companies")
+  .select("name")
+  .eq("id", profile.company_id)
+  .single();
+
+if (companyError || !company?.name) {
+  return Response.json(
+    { success: false, error: "Firmenname konnte nicht ermittelt werden." },
+    { status: 500 }
+  );
+}
+   const analysis = await analyzeRequest(message, company.name, language);
 
     return Response.json({
       success: true,

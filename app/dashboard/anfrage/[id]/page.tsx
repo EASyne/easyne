@@ -27,6 +27,11 @@ export default async function AnfrageDetailPage({
   if (!request) {
     return <main className="p-6">Anfrage nicht gefunden.</main>;
   }
+  const { data: company } = await supabase
+  .from("companies")
+  .select("name")
+  .eq("id", request.company_id)
+  .single();
   const { data: customerHistory } = await supabase
   .from("customer_requests")
   .select("id, created_at, subject, status")
@@ -50,7 +55,11 @@ if (
 }
 if (!analysis) {
 const data = {
-  analysis: await analyzeRequest(request.message, "Deutsch"),
+  analysis: await analyzeRequest(
+  request.message,
+  company?.name || "Ihre Firma",
+  "Deutsch"
+),
 };
 analysis = data.analysis;
 if (analysis) {

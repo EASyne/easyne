@@ -6,6 +6,7 @@ const openai = new OpenAI({
 
 export async function analyzeRequest(
   message: string,
+  companyName: string,
   language: string = "Deutsch"
 ) {
       const response = await openai.responses.create({

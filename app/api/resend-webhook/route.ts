@@ -50,7 +50,7 @@ const recipients = Array.isArray(event.data.to)
 
 const { data: company, error: companyError } = await supabaseAdmin
   .from("companies")
-  .select("id")
+  .select("id, name")
   .in("inbound_email", recipients)
   .maybeSingle();
 
@@ -88,9 +88,10 @@ if (insertError) {
   if (insertedRequest) {
   try {
     const analysis = await analyzeRequest(
-      email.text || "Keine Textnachricht vorhanden.",
-      "Deutsch"
-    );
+  email.text || "Keine Textnachricht vorhanden.",
+  company.name,
+  "Deutsch"
+);
 
     const { error: analysisError } = await supabaseAdmin
       .from("customer_requests")
