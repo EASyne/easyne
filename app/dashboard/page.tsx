@@ -10,14 +10,17 @@ export default async function DashboardPage({
   search?: string;
   status?: string;
   priority?: string;
+  checkout?: string;
 }>;
 }) {
     const {
   search = "",
   status = "alle",
   priority = "alle",
+  checkout,
 } = await searchParams;
   const supabase = await createServerSupabaseClient();
+  
 
   const {
     data: { user },
@@ -30,6 +33,11 @@ const { data: profile } = await supabase
   .select("company_id")
   .eq("id", user.id)
   .single();
+  if (checkout === "cancel" && profile?.company_id) {
+  await supabase.rpc("release_stripe_checkout", {
+    p_company_id: profile.company_id,
+  });
+}
   const { data: company } = await supabase
   .from("companies")
   .select("subscription_status")
