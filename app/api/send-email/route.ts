@@ -73,7 +73,7 @@ if (rateLimited) {
 
     const { data: customerRequest, error: requestError } = await supabase
       .from("customer_requests")
-      .select("id, costumer_mail, subject")
+      .select("id, costumer_mail, subject, company_id")
       .eq("id", requestId)
       .single();
 
@@ -83,9 +83,36 @@ if (rateLimited) {
         { status: 404 }
       );
     }
+    const { data: profile, error: profileError } = await supabase
+  .from("profiles")
+  .select("company_id")
+  .eq("id", user.id)
+  .single();
 
+if (
+  profileError ||
+  !profile?.company_id ||
+  profile.company_id !== customerRequest.company_id
+) {
+  return Response.json(
+    { success: false, error: "Keine Berechtigung für diese Anfrage." },
+    { status: 403 }
+  );
+}
+const { data: company, error: companyError } = await supabase
+  .from("companies")
+  .select("name")
+  .eq("id", profile.company_id)
+  .single();
+
+if (companyError || !company?.name) {
+  return Response.json(
+    { success: false, error: "Firmenname konnte nicht geladen werden." },
+    { status: 500 }
+  );
+}
     const { data, error } = await resend.emails.send({
-      from: "EASyne <support@easyne.ch>",
+      from: `${company.name.replace(/[\r\n<>"]/g, "").trim()} <support@easyne.ch>`,
       to: customerRequest.costumer_mail,
       subject: `Re: ${customerRequest.subject}`,
       text,
