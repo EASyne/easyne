@@ -97,7 +97,13 @@ const openRequests = filteredRequests?.filter(
 const doneRequests = filteredRequests?.filter(
   (request) => request.status === "erledigt"
 );
+const totalCount = requests?.length ?? 0;
 
+const openCount =
+  requests?.filter((request) => request.status !== "erledigt").length ?? 0;
+
+const doneCount =
+  requests?.filter((request) => request.status === "erledigt").length ?? 0;
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -133,6 +139,34 @@ const doneRequests = filteredRequests?.filter(
   <LogoutButton />
 </div>
   </div>
+  <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <p className="text-sm font-medium text-slate-500">
+      Anfragen gesamt
+    </p>
+    <p className="mt-3 text-3xl font-bold text-slate-900">
+      {totalCount}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-amber-200 bg-white p-6 shadow-sm">
+    <p className="text-sm font-medium text-slate-500">
+      Offene Anfragen
+    </p>
+    <p className="mt-3 text-3xl font-bold text-amber-600">
+      {openCount}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-emerald-200 bg-white p-6 shadow-sm">
+    <p className="text-sm font-medium text-slate-500">
+      Erledigte Anfragen
+    </p>
+    <p className="mt-3 text-3xl font-bold text-emerald-600">
+      {doneCount}
+    </p>
+  </div>
+</div>
   <RequestFilters />
   <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <div className="flex items-center justify-between">
