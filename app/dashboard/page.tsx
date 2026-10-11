@@ -198,7 +198,19 @@ const doneCount =
     <p className="font-semibold text-slate-900">
       {request.subject}
     </p>
-
+    {request.ai_priority && (
+  <span
+    className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+      request.ai_priority.toLowerCase() === "hoch"
+        ? "bg-red-100 text-red-700"
+        : request.ai_priority.toLowerCase() === "mittel"
+        ? "bg-amber-100 text-amber-700"
+        : "bg-emerald-100 text-emerald-700"
+    }`}
+  >
+    Priorität: {request.ai_priority}
+  </span>
+)}
     <span
   className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
     request.status === "erledigt"
