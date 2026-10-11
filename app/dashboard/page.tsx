@@ -193,7 +193,7 @@ const doneCount =
   
     key={request.id}
     href={`/dashboard/anfrage/${request.id}`}
-    className="mt-6 block rounded-xl border border-slate-200 p-4 transition hover:border-violet-300 hover:shadow-sm"
+    className="group mt-4 block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
   >
     <p className="font-semibold text-slate-900">
       {request.subject}
@@ -225,9 +225,9 @@ const doneCount =
       {request.costumer_mail}
     </p>
 
-    <p className="mt-1 text-sm text-slate-500">
-      {request.message}
-    </p>
+    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600">
+  {request.message}
+</p>
   </a>
 ))}
 <h2 className="mt-10 text-lg font-bold text-slate-900">
