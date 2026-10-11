@@ -100,7 +100,7 @@ useEffect(() => {
 
           <a
   href="/login"
-  className="hidden sm:inline-flex rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+  className="inline-flex rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
 >
   Firmenlogin
 </a>
