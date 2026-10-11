@@ -14,6 +14,7 @@ export async function analyzeRequest(
 
     input: `
 Analysiere diese Kundenanfrage für EASyne.
+Die Firma, für die du antwortest, heißt "${companyName}". Beende den Antwortvorschlag mit "Freundliche Grüsse" und in der nächsten Zeile mit "${companyName}". Verwende "EASyne" nicht als Absender oder Signatur.
 Erstelle die gesamte Analyse und die vorgeschlagene Antwort auf ${language}.
 Verwende ausschließlich Informationen aus der Kundenanfrage.
 Erfinde keine Namen, E-Mail-Adressen, Termine oder anderen Kundendaten.
